@@ -5,23 +5,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" href="styles.css" />
-    <script type="module" src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   </head>
   <body>
     <header>
       <nav>
-       
         <div class="nav-spacer"></div>
-        <a href="/Dados/index.html">Home</a>
+        <a href="index.html">Home</a>
         <div class="dropdown">
           <div class="dropdown-toggle">
             Districts <i class="fas fa-caret-down"></i>
           </div>
           <div class="dropdown-menu">
-            <a href="/Dados/major-districts.html">Major Districts</a>
-            <a href="/Dados/minor-districts.html">Minor Districts</a>
-            <a href="/Dados/districts.html">All Districts</a>
+            <a href="major-districts.html">Major Districts</a>
+            <a href="minor-districts.html">Minor Districts</a>
+            <a href="districts.html">All Districts</a>
           </div>
         </div>
         <div class="dropdown">
@@ -29,42 +29,46 @@
             Municipalities <i class="fas fa-caret-down"></i>
           </div>
           <div class="dropdown-menu">
-            <a href="/Dados/urban-municipalities.html">Urban Municipalities</a>
-            <a href="/Dados/rural-municipalities.html">Rural Municipalities</a>
-            <a href="/Dados/municipalities.html">All Municipalities</a>
+            <a href="urban-municipalities.html">Urban Municipalities</a>
+            <a href="rural-municipalities.html">Rural Municipalities</a>
+            <a href="municipalities.html">All Municipalities</a>
           </div>
         </div>
-        <a href="/Dados/issues.html" aria-current="page">Issues</a>
+        <a href="issues.html" class="active">Issues</a>
+        <a href="how-it-works.html">How It Works</a>
       </nav>
-      <h1 class="main-title">Welcome to Gandaki</h1>
     </header>
     <main>
       <h2>Current Issues in Gandaki Province</h2>
       
+      <div class="chart-container">
+        <canvas id="issuesChart"></canvas>
+      </div>
+      
       <div class="issues-container">
         <div class="issue-card">
           <h3>Infrastructure Development</h3>
-          <p>Discussion on ongoing infrastructure projects and challenges in the province.</p>
+          <p>Discussion on ongoing infrastructure projects and challenges in the province, including road network improvements, bridge repairs, and access to remote areas.</p>
         </div>
         
         <div class="issue-card">
-          <h3>Tourism</h3>
-          <p>Updates on tourism initiatives and strategies to boost the tourism sector in Gandaki.</p>
+          <h3>Tourism Recovery</h3>
+          <p>Updates on tourism initiatives and strategies to boost the tourism sector in Gandaki, focusing on sustainable development and cultural preservation.</p>
         </div>
         
         <div class="issue-card">
           <h3>Environmental Conservation</h3>
-          <p>Information about environmental challenges and conservation efforts in the region.</p>
+          <p>Information about environmental challenges and conservation efforts in the region, including climate change impacts and waste management.</p>
         </div>
         
         <div class="issue-card">
-          <h3>Education</h3>
-          <p>Current state of education and educational reforms in Gandaki Province.</p>
+          <h3>Education Access</h3>
+          <p>Current state of education and educational reforms in Gandaki Province, with emphasis on remote learning and digital infrastructure.</p>
         </div>
         
         <div class="issue-card">
-          <h3>Healthcare</h3>
-          <p>Updates on healthcare facilities and public health initiatives in the province.</p>
+          <h3>Healthcare Services</h3>
+          <p>Updates on healthcare facilities and public health initiatives in the province, focusing on improving access in remote areas.</p>
         </div>
       </div>
     </main>
