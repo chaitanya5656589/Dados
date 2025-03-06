@@ -57,15 +57,15 @@ nav a {
   border-radius: 0.2rem;
   text-align: center;
   text-decoration: none;
-  color: #ecf0f1;
-  font-weight: 500;
+  color: #333;
+  font-weight: 700;
   transition: background-color 0.3s, color 0.3s;
   margin-right: 1.5rem;
 }
 
 nav a:hover {
-  background-color: rgba(236, 240, 241, 0.2);
-  color: #fff;
+  background-color: rgba(52, 152, 219, 0.2);
+  color: #333;
 }
 
 nav a[aria-current='page'],
@@ -88,8 +88,8 @@ nav a.active {
   border-radius: 0.2rem;
   text-align: center;
   text-decoration: none;
-  color: #ecf0f1;
-  font-weight: 500;
+  color: #333;
+  font-weight: 700;
   transition: background-color 0.3s, color 0.3s;
   cursor: pointer;
 }
@@ -105,26 +105,28 @@ nav a.active {
   top: 100%;
   left: 0;
   display: none;
-  background-color: rgba(44, 62, 80, 0.9);
+  background-color: rgba(255, 255, 255, 0.95);
   min-width: 10rem;
   border-radius: 0.2rem;
   z-index: 20;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .dropdown-menu a {
   display: block;
   padding: 0.5rem 1rem;
-  color: #ecf0f1;
+  color: #333;
   text-decoration: none;
   text-align: left;
   margin-right: 0;
   min-width: auto;
   transition: background-color 0.3s;
+  font-weight: 500;
 }
 
 .dropdown-menu a:hover {
-  background-color: rgba(52, 152, 219, 0.7);
-  color: white;
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #333;
 }
 
 .dropdown:hover .dropdown-menu {
@@ -134,9 +136,9 @@ nav a.active {
 main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1rem;
   background-color: transparent;
-  margin-top: 2rem;
+  margin-top: 0;
   margin-bottom: 2rem;
   border-radius: 10px;
 }
@@ -154,6 +156,35 @@ h3 {
   margin-bottom: 1rem;
   color: #ecf0f1;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Video section styles */
+.video-section {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.video-section h2 {
+  color: #2c3e50;
+  text-shadow: none;
+  margin-bottom: 2rem;
+}
+
+.video-container {
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.video-container video {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* Nepal Logo */
@@ -532,6 +563,25 @@ h3 {
   color: #333;
 }
 
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  margin: 0 auto 2rem;
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  color: #2c3e50;
+  text-shadow: none;
+}
+
+.chart-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
 /* Modal/Popup styles */
 .modal-overlay {
   position: fixed;
@@ -643,6 +693,70 @@ h3 {
   color: #3498db;
 }
 
+.impact-districts {
+  margin-top: 1.5rem;
+}
+
+.impact-district-card {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.district-name {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.impact-meter {
+  height: 8px;
+  background-color: #ecf0f1;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.impact-level {
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 4px;
+  transition: width 0.3s ease-in-out;
+}
+
+.impact-details {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.stat-percentage {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin-top: 0.25rem;
+}
+
+.impact-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.impact-percentage {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 0.9rem;
+}
+
+.impact-details {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  flex: 1;
+  margin-left: 1rem;
+}
+
 footer {
   background-color: transparent;
   color: white;
@@ -735,5 +849,10 @@ footer {
     height: 40px;
     left: 10px;
     top: 10px;
+  }
+  
+  .chart-container {
+    height: 300px;
+    padding: 1rem;
   }
 }
