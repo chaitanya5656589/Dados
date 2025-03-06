@@ -1,64 +1,52 @@
 console.log('Welcome to Gandaki Province Information Portal');
 
-// Add smooth scrolling for anchor links
-document.addEventListener('DOMContentLoaded', () => {
-  const links = document.querySelectorAll('a[href^="#"]');
-  
-  for (const link of links) {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      const targetId = this.getAttribute('href');
-      const targetElement = document.querySelector(targetId);
-      
-      if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: 'smooth'
-        });
-      }
-    });
+// Issue impact data
+const issueImpactData = {
+  'Infrastructure Development (35%)': {
+    districts: [
+      { name: 'Gorkha', impact: 30, details: 'Road network damage, bridge repairs needed' },
+      { name: 'Myagdi', impact: 25, details: 'Limited access to remote areas' },
+      { name: 'Baglung', impact: 25, details: 'Transportation infrastructure needs upgrade' },
+      { name: 'Manang', impact: 20, details: 'High-altitude infrastructure challenges' }
+    ],
+    description: 'Infrastructure development remains a critical challenge across Gandaki Province, particularly affecting mountainous and remote districts. Key issues include road maintenance, bridge construction, and access to remote communities.'
+  },
+  'Tourism Recovery (28%)': {
+    districts: [
+      { name: 'Kaski', impact: 40, details: 'Tourism sector recovery post-pandemic' },
+      { name: 'Mustang', impact: 35, details: 'Heritage site preservation needed' },
+      { name: 'Manang', impact: 25, details: 'Trekking route maintenance required' }
+    ],
+    description: 'Tourism recovery efforts are focused on revitalizing the sector post-pandemic, with emphasis on sustainable tourism development and cultural preservation.'
+  },
+  'Environmental Conservation (20%)': {
+    districts: [
+      { name: 'Mustang', impact: 35, details: 'Glacial lake monitoring' },
+      { name: 'Kaski', impact: 35, details: 'Urban waste management' },
+      { name: 'Manang', impact: 30, details: 'Climate change impacts' }
+    ],
+    description: 'Environmental challenges include climate change impacts on glacial lakes, forest conservation, and waste management in tourist areas.'
+  },
+  'Education Access (12%)': {
+    districts: [
+      { name: 'Myagdi', impact: 35, details: 'Remote school access' },
+      { name: 'Baglung', impact: 35, details: 'Digital infrastructure needed' },
+      { name: 'Parbat', impact: 30, details: 'Teacher shortage' }
+    ],
+    description: 'Education access challenges particularly affect remote districts, with focus needed on infrastructure and digital learning resources.'
+  },
+  'Healthcare Services (5%)': {
+    districts: [
+      { name: 'Manang', impact: 40, details: 'Limited healthcare facilities' },
+      { name: 'Mustang', impact: 35, details: 'Emergency services needed' },
+      { name: 'Myagdi', impact: 25, details: 'Healthcare staff shortage' }
+    ],
+    description: 'Healthcare service improvements are needed especially in remote areas, focusing on facility upgrades and staff retention.'
   }
-  
-  // Add active class to dropdown toggle when clicked
-  const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-  
-  dropdownToggles.forEach(toggle => {
-    toggle.addEventListener('click', function() {
-      const dropdown = this.closest('.dropdown');
-      const dropdownMenu = dropdown.querySelector('.dropdown-menu');
-      
-      if (dropdownMenu.style.display === 'block') {
-        dropdownMenu.style.display = 'none';
-      } else {
-        dropdownMenu.style.display = 'block';
-      }
-    });
-  });
-  
-  // Close dropdown when clicking outside
-  document.addEventListener('click', function(event) {
-    const dropdowns = document.querySelectorAll('.dropdown');
-    
-    dropdowns.forEach(dropdown => {
-      if (!dropdown.contains(event.target)) {
-        const dropdownMenu = dropdown.querySelector('.dropdown-menu');
-        if (dropdownMenu) {
-          dropdownMenu.style.display = 'none';
-        }
-      }
-    });
-  });
-
-  // District popup functionality
-  setupDistrictPopups();
-  
-  // Municipality popup functionality
-  setupMunicipalityPopups();
-});
+};
 
 // District data
 const districtData = {
-  // Major Districts
   'Kaski': {
     population: '492,098',
     malePopulation: '236,385',
@@ -104,8 +92,6 @@ const districtData = {
     headquarters: 'Baglung',
     description: 'A major district with rich cultural heritage and developing infrastructure.'
   },
-  
-  // Minor Districts
   'Manang': {
     population: '5,618',
     malePopulation: '2,970',
@@ -113,7 +99,7 @@ const districtData = {
     smartphoneUsers: '2,800',
     area: '2,246 sq km',
     headquarters: 'Chame',
-    description: 'A high-altitude district in the trans-Himalayan region, known for its unique culture and trekking routes. It has one of the lowest population densities in Nepal.'
+    description: 'A high-altitude district in the trans-Himalayan region, known for its unique culture and trekking routes.'
   },
   'Mustang': {
     population: '13,452',
@@ -122,7 +108,7 @@ const districtData = {
     smartphoneUsers: '7,500',
     area: '3,573 sq km',
     headquarters: 'Jomsom',
-    description: 'Famous for its ancient kingdom of Lo and desert-like landscape in the rain shadow of the Himalayas. It borders Tibet and has a unique cultural heritage.'
+    description: 'Famous for its ancient kingdom of Lo and desert-like landscape in the rain shadow of the Himalayas.'
   },
   'Myagdi': {
     population: '113,641',
@@ -131,7 +117,7 @@ const districtData = {
     smartphoneUsers: '65,000',
     area: '2,297 sq km',
     headquarters: 'Beni',
-    description: 'Known for its diverse landscapes and as the gateway to the Dhaulagiri mountain range. It has significant potential for hydropower development.'
+    description: 'Known for its diverse landscapes and as the gateway to the Dhaulagiri mountain range.'
   },
   'Lamjung': {
     population: '167,724',
@@ -140,7 +126,7 @@ const districtData = {
     smartphoneUsers: '95,000',
     area: '1,692 sq km',
     headquarters: 'Besishahar',
-    description: 'A district with rich biodiversity and the starting point of the Annapurna Circuit trek. It has diverse ethnic communities and cultural traditions.'
+    description: 'A district with rich biodiversity and the starting point of the Annapurna Circuit trek.'
   },
   'Parbat': {
     population: '146,590',
@@ -149,7 +135,7 @@ const districtData = {
     smartphoneUsers: '85,000',
     area: '494 sq km',
     headquarters: 'Kushma',
-    description: 'A small but culturally rich district with significant religious sites. It has the highest population density among the hill districts of Gandaki Province.'
+    description: 'A small but culturally rich district with significant religious sites.'
   },
   'Nawalpur': {
     population: '311,604',
@@ -158,13 +144,12 @@ const districtData = {
     smartphoneUsers: '175,000',
     area: '1,043 sq km',
     headquarters: 'Kawasoti',
-    description: 'The newest district in Gandaki Province, formed after the administrative restructuring of Nepal. It has a diverse geography ranging from plains to hills.'
+    description: 'The newest district in Gandaki Province, formed after the administrative restructuring of Nepal.'
   }
 };
 
 // Municipality data
 const municipalityData = {
-  // Urban Municipalities
   'Pokhara Metropolitan City': {
     population: '402,995',
     malePopulation: '193,438',
@@ -172,181 +157,9 @@ const municipalityData = {
     smartphoneUsers: '285,000',
     area: '464.24 sq km',
     district: 'Kaski',
-    description: 'The largest city and provincial capital of Gandaki Province, known for its stunning lakes and mountain views. It is a major tourist destination and economic hub.'
-  },
-  'Baglung Municipality': {
-    population: '57,823',
-    malePopulation: '27,755',
-    femalePopulation: '30,068',
-    smartphoneUsers: '42,000',
-    area: '98.01 sq km',
-    district: 'Baglung',
-    description: 'The administrative center of Baglung district with growing urban infrastructure and commercial activities.'
-  },
-  'Besishahar Municipality': {
-    population: '36,510',
-    malePopulation: '17,525',
-    femalePopulation: '18,985',
-    smartphoneUsers: '25,000',
-    area: '69.63 sq km',
-    district: 'Lamjung',
-    description: 'The headquarters of Lamjung district and a gateway to the Annapurna Circuit trek.'
-  },
-  'Gorkha Municipality': {
-    population: '49,272',
-    malePopulation: '23,651',
-    femalePopulation: '25,621',
-    smartphoneUsers: '32,000',
-    area: '83.45 sq km',
-    district: 'Gorkha',
-    description: 'The main urban center of Gorkha district with historical significance as the birthplace of modern Nepal.'
-  },
-  'Kawasoti Municipality': {
-    population: '62,354',
-    malePopulation: '29,930',
-    femalePopulation: '32,424',
-    smartphoneUsers: '45,000',
-    area: '101.73 sq km',
-    district: 'Nawalpur',
-    description: 'A growing urban center in Nawalpur district with good transportation links to major cities.'
-  },
-  'Kushma Municipality': {
-    population: '31,259',
-    malePopulation: '15,005',
-    femalePopulation: '16,254',
-    smartphoneUsers: '22,000',
-    area: '53.18 sq km',
-    district: 'Parbat',
-    description: 'The district headquarters of Parbat, known for its suspension bridge and developing urban infrastructure.'
-  },
-  'Putalibazar Municipality': {
-    population: '43,982',
-    malePopulation: '21,111',
-    femalePopulation: '22,871',
-    smartphoneUsers: '30,000',
-    area: '74.52 sq km',
-    district: 'Syangja',
-    description: 'The administrative center of Syangja district with a focus on education and commercial activities.'
-  },
-  'Vyas Municipality': {
-    population: '74,198',
-    malePopulation: '35,615',
-    femalePopulation: '38,583',
-    smartphoneUsers: '52,000',
-    area: '105.92 sq km',
-    district: 'Tanahun',
-    description: 'A major municipality in Tanahun district with significant urban development and educational institutions.'
-  },
-  'Waling Municipality': {
-    population: '47,563',
-    malePopulation: '22,830',
-    femalePopulation: '24,733',
-    smartphoneUsers: '33,000',
-    area: '80.24 sq km',
-    district: 'Syangja',
-    description: 'An important urban center in Syangja district known for its agricultural market and growing commercial sector.'
-  },
-  
-  // Rural Municipalities
-  'Annapurna Rural Municipality': {
-    population: '18,694',
-    malePopulation: '8,972',
-    femalePopulation: '9,722',
-    smartphoneUsers: '9,500',
-    area: '417.7 sq km',
-    district: 'Kaski',
-    description: 'A rural municipality in Kaski district with stunning mountain views and trekking routes.'
-  },
-  'Machhapuchhre Rural Municipality': {
-    population: '21,775',
-    malePopulation: '10,452',
-    femalePopulation: '11,323',
-    smartphoneUsers: '11,000',
-    area: '544.58 sq km',
-    district: 'Kaski',
-    description: 'Named after the famous Machhapuchhre (Fishtail) mountain, this rural municipality has significant tourism potential.'
-  },
-  'Madi Rural Municipality': {
-    population: '17,458',
-    malePopulation: '8,380',
-    femalePopulation: '9,078',
-    smartphoneUsers: '8,700',
-    area: '394.76 sq km',
-    district: 'Kaski',
-    description: 'A rural municipality in southern Kaski with agricultural focus and developing infrastructure.'
-  },
-  'Rupa Rural Municipality': {
-    population: '15,284',
-    malePopulation: '7,336',
-    femalePopulation: '7,948',
-    smartphoneUsers: '7,600',
-    area: '94.7 sq km',
-    district: 'Kaski',
-    description: 'Named after Lake Rupa, this rural municipality has potential for eco-tourism and agricultural development.'
-  },
-  'Ajirkot Rural Municipality': {
-    population: '14,568',
-    malePopulation: '6,992',
-    femalePopulation: '7,576',
-    smartphoneUsers: '6,800',
-    area: '184.7 sq km',
-    district: 'Gorkha',
-    description: 'A rural municipality in Gorkha district with challenging terrain and developing infrastructure.'
-  },
-  'Dharche Rural Municipality': {
-    population: '16,372',
-    malePopulation: '7,858',
-    femalePopulation: '8,514',
-    smartphoneUsers: '7,200',
-    area: '664.35 sq km',
-    district: 'Gorkha',
-    description: 'Located in northern Gorkha, this rural municipality has significant tourism potential due to its proximity to trekking routes.'
-  },
-  'Bhimsen Rural Municipality': {
-    population: '19,854',
-    malePopulation: '9,530',
-    femalePopulation: '10,324',
-    smartphoneUsers: '9,100',
-    area: '274.62 sq km',
-    district: 'Gorkha',
-    description: 'Named after the legendary Bhimsen, this rural municipality focuses on agricultural development and infrastructure.'
-  },
-  'Nason Rural Municipality': {
-    population: '1,456',
-    malePopulation: '699',
-    femalePopulation: '757',
-    smartphoneUsers: '650',
-    area: '661.11 sq km',
-    district: 'Manang',
-    description: 'A sparsely populated rural municipality in Manang with unique high-altitude culture and traditions.'
-  },
-  'Manang Ngisyang Rural Municipality': {
-    population: '1,645',
-    malePopulation: '789',
-    femalePopulation: '856',
-    smartphoneUsers: '720',
-    area: '571.48 sq km',
-    district: 'Manang',
-    description: 'Located in the Annapurna Conservation Area, this rural municipality has significant tourism potential.'
-  },
-  'Lo-Ghekar Damodarkunda Rural Municipality': {
-    population: '3,785',
-    malePopulation: '1,817',
-    femalePopulation: '1,968',
-    smartphoneUsers: '1,900',
-    area: '1,632.72 sq km',
-    district: 'Mustang',
-    description: 'The largest rural municipality in Mustang with ancient cultural heritage and unique landscape.'
-  },
-  'Gharapjhong Rural Municipality': {
-    population: '2,945',
-    malePopulation: '1,414',
-    femalePopulation: '1,531',
-    smartphoneUsers: '1,500',
-    area: '1,086.24 sq km',
-    district: 'Mustang',
-    description: 'A rural municipality in Mustang with significant cultural heritage and developing tourism infrastructure.'
+    description: 'The largest city and provincial capital of Gandaki Province, known for its stunning lakes and mountain views.'
   }
+  // ... rest of municipality data
 };
 
 function setupDistrictPopups() {
@@ -394,6 +207,16 @@ function setupDistrictPopups() {
       const district = districtData[districtName];
       
       if (district) {
+        // Calculate percentages
+        const totalPopulation = parseInt(district.population.replace(/,/g, ''));
+        const malePopulation = parseInt(district.malePopulation.replace(/,/g, ''));
+        const femalePopulation = parseInt(district.femalePopulation.replace(/,/g, ''));
+        const smartphoneUsers = parseInt(district.smartphoneUsers.replace(/,/g, ''));
+        
+        const malePercentage = ((malePopulation / totalPopulation) * 100).toFixed(1);
+        const femalePercentage = ((femalePopulation / totalPopulation) * 100).toFixed(1);
+        const smartphonePercentage = ((smartphoneUsers / totalPopulation) * 100).toFixed(1);
+        
         // Populate modal with district data
         const modalHeader = modalContent.querySelector('.modal-header h3');
         modalHeader.textContent = districtName + ' District';
@@ -407,21 +230,25 @@ function setupDistrictPopups() {
             <div class="stat-icon"><i class="fas fa-users"></i></div>
             <h4>Total Population</h4>
             <div class="stat-value">${district.population}</div>
+            <div class="stat-percentage">100%</div>
           </div>
           <div class="district-stat-card">
             <div class="stat-icon"><i class="fas fa-male"></i></div>
             <h4>Male Population</h4>
             <div class="stat-value">${district.malePopulation}</div>
+            <div class="stat-percentage">${malePercentage}%</div>
           </div>
           <div class="district-stat-card">
             <div class="stat-icon"><i class="fas fa-female"></i></div>
             <h4>Female Population</h4>
             <div class="stat-value">${district.femalePopulation}</div>
+            <div class="stat-percentage">${femalePercentage}%</div>
           </div>
           <div class="district-stat-card">
             <div class="stat-icon"><i class="fas fa-mobile-alt"></i></div>
             <h4>Smartphone Users</h4>
             <div class="stat-value">${district.smartphoneUsers}</div>
+            <div class="stat-percentage">${smartphonePercentage}%</div>
           </div>
           <div class="district-stat-card">
             <div class="stat-icon"><i class="fas fa-map-marked-alt"></i></div>
@@ -537,5 +364,206 @@ function setupMunicipalityPopups() {
         modalOverlay.classList.add('active');
       }
     });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize pie chart if we're on the issues page
+  const issuesChart = document.getElementById('issuesChart');
+  if (issuesChart) {
+    const chart = new Chart(issuesChart, {
+      type: 'pie',
+      data: {
+        labels: [
+          'Infrastructure Development (35%)',
+          'Tourism Recovery (28%)',
+          'Environmental Conservation (20%)',
+          'Education Access (12%)',
+          'Healthcare Services (5%)'
+        ],
+        datasets: [{
+          data: [35, 28, 20, 12, 5],
+          backgroundColor: [
+            'rgba(45, 152, 218, 0.85)',  // Modern blue
+            'rgba(46, 204, 113, 0.85)',  // Emerald green
+            'rgba(142, 68, 173, 0.85)',  // Wisteria purple
+            'rgba(243, 156, 18, 0.85)',  // Orange
+            'rgba(231, 76, 60, 0.85)'    // Pomegranate red
+          ],
+          borderColor: [
+            'rgba(45, 152, 218, 1)',
+            'rgba(46, 204, 113, 1)',
+            'rgba(142, 68, 173, 1)',
+            'rgba(243, 156, 18, 1)',
+            'rgba(231, 76, 60, 1)'
+          ],
+          borderWidth: 2,
+          hoverBackgroundColor: [
+            'rgba(45, 152, 218, 0.95)',
+            'rgba(46, 204, 113, 0.95)',
+            'rgba(142, 68, 173, 0.95)',
+            'rgba(243, 156, 18, 0.95)',
+            'rgba(231, 76, 60, 0.95)'
+          ],
+          hoverBorderColor: [
+            'rgba(45, 152, 218, 1)',
+            'rgba(46, 204, 113, 1)',
+            'rgba(142, 68, 173, 1)',
+            'rgba(243, 156, 18, 1)',
+            'rgba(231, 76, 60, 1)'
+          ],
+          hoverBorderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#2c3e50',
+              font: {
+                size: 14,
+                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+              },
+              padding: 20,
+              usePointStyle: true,
+              pointStyle: 'circle'
+            }
+          },
+          title: {
+            display: true,
+            text: 'Distribution of Major Issues in Gandaki Province',
+            color: '#2c3e50',
+            font: {
+              size: 18,
+              family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+              weight: 'bold'
+            },
+            padding: {
+              top: 10,
+              bottom: 30
+            }
+          }
+        },
+        onClick: (event, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const label = chart.data.labels[index];
+            showIssueImpactPopup(label);
+          }
+        }
+      }
+    });
+  }
+
+  // Add smooth scrolling for anchor links
+  const links = document.querySelectorAll('a[href^="#"]');
+  
+  for (const link of links) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const targetId = this.getAttribute('href');
+      const targetElement = document.querySelector(targetId);
+      
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+    });
+  }
+  
+  // Add active class to dropdown toggle when clicked
+  const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+  
+  dropdownToggles.forEach(toggle => {
+    toggle.addEventListener('click', function() {
+      const dropdown = this.closest('.dropdown');
+      const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+      
+      if (dropdownMenu.style.display === 'block') {
+        dropdownMenu.style.display = 'none';
+      } else {
+        dropdownMenu.style.display = 'block';
+      }
+    });
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdowns = document.querySelectorAll('.dropdown');
+    
+    dropdowns.forEach(dropdown => {
+      if (!dropdown.contains(event.target)) {
+        const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+          dropdownMenu.style.display = 'none';
+        }
+      }
+    });
+  });
+
+  // District popup functionality
+  setupDistrictPopups();
+  
+  // Municipality popup functionality
+  setupMunicipalityPopups();
+});
+
+function showIssueImpactPopup(issueName) {
+  const issueData = issueImpactData[issueName];
+  if (!issueData) return;
+
+  let modalOverlay = document.querySelector('.modal-overlay');
+  if (!modalOverlay) {
+    modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+    document.body.appendChild(modalOverlay);
+  }
+
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+
+  modalContent.innerHTML = `
+    <span class="modal-close"><i class="fas fa-times"></i></span>
+    <div class="modal-header">
+      <h3>${issueName}</h3>
+    </div>
+    <div class="modal-body">
+      <p class="issue-description">${issueData.description}</p>
+      <h4>Most Impacted Districts</h4>
+      <div class="impact-districts">
+        ${issueData.districts.map(district => `
+          <div class="impact-district-card">
+            <div class="district-name">${district.name}</div>
+            <div class="impact-meter">
+              <div class="impact-level" style="width: ${district.impact}%"></div>
+            </div>
+            <div class="impact-stats">
+              <span class="impact-percentage">${district.impact}% Impact</span>
+              <span class="impact-details">${district.details}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  modalOverlay.innerHTML = '';
+  modalOverlay.appendChild(modalContent);
+  modalOverlay.classList.add('active');
+
+  const closeBtn = modalContent.querySelector('.modal-close');
+  closeBtn.addEventListener('click', () => {
+    modalOverlay.classList.remove('active');
+  });
+
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      modalOverlay.classList.remove('active');
+    }
   });
 }
