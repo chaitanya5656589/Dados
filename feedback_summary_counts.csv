@@ -1,0 +1,15 @@
+Department,Sentiment,Count
+Electricity,Neutral,146
+Governance,Neutral,95
+Law & Order,Negative,47
+Law & Order,Neutral,53
+Public Health,Negative,25
+Public Health,Neutral,67
+Public Health,Positive,19
+Roads,Negative,48
+Roads,Neutral,106
+Sanitation,Negative,19
+Sanitation,Neutral,158
+Sanitation,Positive,16
+Water,Negative,31
+Water,Neutral,170
