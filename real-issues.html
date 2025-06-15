@@ -1,128 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width" />
-<title>Real Issues - Gandaki Province</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  h2 { text-align: center; }
-  .chart-container { max-width: 600px; margin: auto; }
-  canvas { max-width: 100%; }
-  #sentimentChartContainer { display: none; margin-top: 40px; }
-  .chart-title { text-align: center; font-weight: bold; margin-bottom: 10px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Real Issues - Gandaki Province</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Align with Dados site styling basics */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .chart-container {
+      max-width: 700px;
+      margin: auto;
+    }
+    canvas {
+      max-width: 100%;
+    }
+    #sentimentChartContainer {
+      display: none;
+      margin-top: 40px;
+    }
+    .chart-title {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-<h2>Real Issues in Gandaki Province</h2>
+  <!-- Your Dados header goes here - copy exactly from your other pages -->
+  <header>
+    <nav>
+      <div class="nav-spacer"></div>
+      <a href="/Dados/index.html">Home</a>
+      <div class="dropdown">
+        <div class="dropdown-toggle">
+          Districts <i class="fas fa-caret-down"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="/Dados/major-districts.html">Major Districts</a>
+          <a href="/Dados/minor-districts.html">Minor Districts</a>
+          <a href="/Dados/districts.html">All Districts</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <div class="dropdown-toggle">
+          Municipalities <i class="fas fa-caret-down"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="/Dados/urban-municipalities.html">Urban Municipalities</a>
+          <a href="/Dados/rural-municipalities.html">Rural Municipalities</a>
+          <a href="/Dados/municipalities.html">All Municipalities</a>
+        </div>
+      </div>
+      <a href="/Dados/issues.html" class="active">Issues</a>
+      <a href="/Dados/how-it-works.html">How It Works</a>
+    </nav>
+  </header>
 
-<div class="chart-container">
-  <div>
-    <div class="chart-title">Issues by Department (click a slice)</div>
-    <canvas id="departmentChart"></canvas>
-  </div>
+  <main>
+    <h2>Real Issues in Gandaki Province</h2>
+    <div class="chart-container">
+      <div>
+        <div class="chart-title">Issues by Department (click a slice)</div>
+        <canvas id="departmentChart"></canvas>
+      </div>
+      <div id="sentimentChartContainer">
+        <div class="chart-title" id="sentimentTitle"></div>
+        <canvas id="sentimentChart"></canvas>
+      </div>
+    </div>
+  </main>
 
-  <div id="sentimentChartContainer">
-    <div class="chart-title" id="sentimentTitle"></div>
-    <canvas id="sentimentChart"></canvas>
-  </div>
-</div>
+  <!-- Your Dados footer goes here -->
+  <footer>
+    <p>&copy; 2025 Gandaki Province Information Portal</p>
+  </footer>
 
-<script>
-// Load CSV from same folder
-async function loadCSV(url) {
-  const res = await fetch(url);
-  const text = await res.text();
-  const lines = text.trim().split('\n');
-  const rows = lines.slice(1).map(line => {
-    const [feedback, department, sentiment] = line.split(',');
-    return { feedback, department, sentiment };
-  });
-  return rows;
-}
+  <script>
+    // Adjust CSV file path if needed
+    const csvFile = 'feedback_summary_counts.csv';
 
-// Aggregate counts
-function aggregateData(data) {
-  const deptCounts = {};
-  const deptSentiments = {};
-
-  data.forEach(({department, sentiment}) => {
-    deptCounts[department] = (deptCounts[department] || 0) + 1;
-    if (!deptSentiments[department]) {
-      deptSentiments[department] = { Positive: 0, Neutral: 0, Negative: 0 };
+    async function loadCSV(url) {
+      const response = await fetch(url);
+      const text = await response.text();
+      const lines = text.trim().split('\n');
+      // Skip header line and parse
+      return lines.slice(1).map(line => {
+        const [department, sentiment, countStr] = line.split(',');
+        return { department, sentiment, count: +countStr };
+      });
     }
-    if (sentiment in deptSentiments[department]) {
-      deptSentiments[department][sentiment]++;
+
+    function aggregateDepartments(data) {
+      const deptTotals = {};
+      const deptSentiments = {};
+
+      data.forEach(({ department, sentiment, count }) => {
+        deptTotals[department] = (deptTotals[department] || 0) + count;
+
+        if (!deptSentiments[department]) {
+          deptSentiments[department] = { Positive: 0, Neutral: 0, Negative: 0 };
+        }
+        if (deptSentiments[department][sentiment] !== undefined) {
+          deptSentiments[department][sentiment] += count;
+        }
+      });
+
+      return { deptTotals, deptSentiments };
     }
-  });
 
-  return { deptCounts, deptSentiments };
-}
+    function randomColor(index) {
+      // Use fixed palette or HSL random
+      const colors = [
+        '#3366CC','#DC3912','#FF9900','#109618','#990099',
+        '#0099C6','#DD4477','#66AA00','#B82E2E','#316395'
+      ];
+      return colors[index % colors.length];
+    }
 
-function randomColor() {
-  return `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
-}
+    async function main() {
+      const data = await loadCSV(csvFile);
+      const { deptTotals, deptSentiments } = aggregateDepartments(data);
 
-async function render() {
-  const data = await loadCSV('feedback_summary_counts.csv');
-  const { deptCounts, deptSentiments } = aggregateData(data);
+      const departments = Object.keys(deptTotals);
+      const totals = departments.map(d => deptTotals[d]);
+      const colors = departments.map((_, i) => randomColor(i));
 
-  const departments = Object.keys(deptCounts);
-  const counts = departments.map(d => deptCounts[d]);
-  const colors = departments.map(() => randomColor());
+      const ctxDept = document.getElementById('departmentChart').getContext('2d');
+      const ctxSentiment = document.getElementById('sentimentChart').getContext('2d');
 
-  const ctxDept = document.getElementById('departmentChart').getContext('2d');
-  let sentimentChart = null;
+      let sentimentChart = null;
 
-  const departmentChart = new Chart(ctxDept, {
-    type: 'pie',
-    data: {
-      labels: departments,
-      datasets: [{
-        data: counts,
-        backgroundColor: colors,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'bottom' },
-      },
-      onClick(evt, activeEls) {
-        if (!activeEls.length) return;
-        const idx = activeEls[0].index;
-        const dept = departments[idx];
-        const sentiments = deptSentiments[dept];
-        if (!sentiments) return;
-
-        document.getElementById('sentimentTitle').textContent = `Sentiment Breakdown for "${dept}"`;
-        document.getElementById('sentimentChartContainer').style.display = 'block';
-
-        if (sentimentChart) sentimentChart.destroy();
-
-        sentimentChart = new Chart(document.getElementById('sentimentChart').getContext('2d'), {
-          type: 'pie',
-          data: {
-            labels: ['Positive', 'Neutral', 'Negative'],
-            datasets: [{
-              data: [sentiments.Positive, sentiments.Neutral, sentiments.Negative],
-              backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
-            }]
+      const departmentChart = new Chart(ctxDept, {
+        type: 'pie',
+        data: {
+          labels: departments,
+          datasets: [{
+            data: totals,
+            backgroundColor: colors,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
           },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'bottom' },
-            }
-          }
-        });
-      }
-    }
-  });
-}
+          onClick(evt, elements) {
+            if (!elements.length) return;
+            const idx = elements[0].index;
+            const dept = departments[idx];
+            const sentimentData = deptSentiments[dept];
+            if (!sentimentData) return;
 
-render();
-</script>
+            document.getElementById('sentimentTitle').textContent = `Sentiment Breakdown for "${dept}"`;
+            document.getElementById('sentimentChartContainer').style.display = 'block';
+
+            if (sentimentChart) {
+              sentimentChart.destroy();
+            }
+
+            sentimentChart = new Chart(ctxSentiment, {
+              type: 'pie',
+              data: {
+                labels: ['Positive', 'Neutral', 'Negative'],
+                datasets: [{
+                  data: [
+                    sentimentData.Positive,
+                    sentimentData.Neutral,
+                    sentimentData.Negative
+                  ],
+                  backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
+                }]
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: { position: 'bottom' },
+                }
+              }
+            });
+          }
+        }
+      });
+    }
+
+    main();
+  </script>
 </body>
 </html>
