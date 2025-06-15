@@ -75,7 +75,7 @@
   </footer>
 
   <script>
-    const csvData = `Department,Sentiment,Count
+    const csvData = Department,Sentiment,Count
 Electricity,Neutral,146
 Governance,Neutral,95
 Law & Order,Negative,47
@@ -89,7 +89,7 @@ Sanitation,Negative,19
 Sanitation,Neutral,158
 Sanitation,Positive,16
 Water,Negative,31
-Water,Neutral,170`;
+Water,Neutral,170;
 
     const parsed = {};
     const deptCounts = {};
@@ -100,6 +100,7 @@ Water,Neutral,170`;
       if (!parsed[dept]) parsed[dept] = {};
       if (!parsed[dept][sentiment]) parsed[dept][sentiment] = 0;
       parsed[dept][sentiment] += count;
+
       deptCounts[dept] = (deptCounts[dept] || 0) + count;
     });
 
@@ -110,7 +111,7 @@ Water,Neutral,170`;
       data: {
         labels: Object.keys(deptCounts),
         datasets: [{
-          label: 'Department',
+          label: 'Issues by Department',
           data: Object.values(deptCounts),
           backgroundColor: [
             '#ff6384', '#36a2eb', '#cc65fe', '#ffce56',
@@ -119,21 +120,6 @@ Water,Neutral,170`;
         }]
       },
       options: {
-        responsive: true,
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.formattedValue || '';
-                return `${label}: ${value} reports`;
-              }
-            }
-          },
-          title: {
-            display: false
-          }
-        },
         onClick: (evt, elements) => {
           if (elements.length === 0) return;
           const index = elements[0].index;
@@ -143,24 +129,16 @@ Water,Neutral,170`;
       }
     });
 
-    // Sentiment Chart (placeholder)
+    // Sentiment Chart (initial placeholder)
     const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
     const sentimentChart = new Chart(sentimentCtx, {
       type: 'pie',
       data: {
-        labels: ["Click a department to view"],
+        labels: ["Click on a department pie to view sentiment"],
         datasets: [{
           data: [1],
           backgroundColor: ['#d3d3d3']
         }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: false
-          }
-        }
       }
     });
 
@@ -168,10 +146,10 @@ Water,Neutral,170`;
       const sentiments = parsed[dept];
       sentimentChart.data.labels = Object.keys(sentiments);
       sentimentChart.data.datasets[0].data = Object.values(sentiments);
-      sentimentChart.data.datasets[0].backgroundColor = ['#4caf50', '#f44336', '#ffeb3b'];
+      sentimentChart.data.datasets[0].backgroundColor = ['#4caf50', '#f44336', '#ffeb3b']; // Positive, Negative, Neutral
       sentimentChart.options.plugins.title = {
         display: true,
-        text: `Sentiment breakdown for ${dept}`
+        text: Sentiment breakdown for ${dept}
       };
       sentimentChart.update();
     }
