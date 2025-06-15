@@ -1,149 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <title>Real Issues - Gandaki Province</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="script.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="nav-spacer"></div>
+        <a href="/Dados/index.html">Home</a>
 
-<head>
-  <title>Real Issues - Dados</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="script.js" defer></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-</head>
-
-<body>
-  <header>
-    <nav>
-      <div class="nav-spacer"></div>
-      <a href="/Dados/index.html">Home</a>
-
-      <div class="dropdown">
-        <div class="dropdown-toggle">
-          Districts <i class="fas fa-caret-down"></i>
+        <div class="dropdown">
+          <div class="dropdown-toggle">
+            Districts <i class="fas fa-caret-down"></i>
+          </div>
+          <div class="dropdown-menu">
+            <a href="/Dados/major-districts.html">Major Districts</a>
+            <a href="/Dados/minor-districts.html">Minor Districts</a>
+            <a href="/Dados/districts.html">All Districts</a>
+          </div>
         </div>
-        <div class="dropdown-menu">
-          <a href="/Dados/major-districts.html">Major Districts</a>
-          <a href="/Dados/minor-districts.html">Minor Districts</a>
-          <a href="/Dados/districts.html">All Districts</a>
+
+        <div class="dropdown">
+          <div class="dropdown-toggle">
+            Municipalities <i class="fas fa-caret-down"></i>
+          </div>
+          <div class="dropdown-menu">
+            <a href="/Dados/urban-municipalities.html">Urban Municipalities</a>
+            <a href="/Dados/rural-municipalities.html">Rural Municipalities</a>
+            <a href="/Dados/municipalities.html">All Municipalities</a>
+          </div>
         </div>
+
+        <a href="/Dados/issues.html">Issues</a>
+        <a href="/Dados/real-issues.html" class="active">Real Issues</a>
+        <a href="/Dados/how-it-works.html">How It Works</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>Real Issues in Gandaki Province</h2>
+
+      <div class="chart-container" style="max-width: 600px; margin: auto;">
+        <canvas id="realIssuesChart"></canvas>
       </div>
 
-      <div class="dropdown">
-        <div class="dropdown-toggle">
-          Municipalities <i class="fas fa-caret-down"></i>
-        </div>
-        <div class="dropdown-menu">
-          <a href="/Dados/urban-municipalities.html">Urban Municipalities</a>
-          <a href="/Dados/rural-municipalities.html">Rural Municipalities</a>
-          <a href="/Dados/municipalities.html">All Municipalities</a>
-        </div>
-      </div>
+      <section
+        class="issues-description"
+        style="max-width: 800px; margin: 2rem auto; text-align:center;"
+      >
+        <p>
+          This chart visualizes categorized real issues collected from citizen
+          feedback in Gandaki Province.
+        </p>
+      </section>
+    </main>
 
-      <a href="/Dados/issues.html">Issues</a>
-      <a href="/Dados/real-issues.html" class="active">Real Issues</a>
-      <a href="/Dados/how-it-works.html">How It Works</a>
-    </nav>
-  </header>
+    <footer>
+      <p>&copy; 2025 Gandaki Province Information Portal</p>
+    </footer>
 
-  <main>
-    <h2>Real Issues Feedback Summary</h2>
+    <script>
+      // Replace this path with your actual CSV file path or URL
+      const csvFilePath = "/Dados/feedback_summary_counts.csv";
 
-    <div class="chart-container">
-      <!-- We'll show three pie charts for Positive, Neutral, Negative -->
-      <canvas id="positiveChart" aria-label="Positive feedback pie chart" role="img"></canvas>
-      <canvas id="neutralChart" aria-label="Neutral feedback pie chart" role="img"></canvas>
-      <canvas id="negativeChart" aria-label="Negative feedback pie chart" role="img"></canvas>
-    </div>
-
-    <!-- Optional description or info about the charts -->
-    <section class="issues-description">
-      <p>
-        This page displays a sentiment-wise breakdown of feedback on various real issues collected from users.
-      </p>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 Dados - All rights reserved</p>
-  </footer>
-
-  <script>
-    async function loadCSVAndRenderCharts() {
-      const csvFile = 'feedback_summary_counts.csv'; // Adjust path if needed
-
-      function parseCSV(csvText) {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',');
-        return lines.slice(1).map(line => {
-          const values = line.split(',');
+      // Function to parse CSV text into array of objects
+      function parseCSV(text) {
+        const lines = text.trim().split("\n");
+        const headers = lines[0].split(",");
+        const data = lines.slice(1).map((line) => {
+          const values = line.split(",");
           let obj = {};
           headers.forEach((header, i) => {
             obj[header.trim()] = values[i].trim();
           });
           return obj;
         });
+        return data;
       }
 
-      try {
-        const response = await fetch(csvFile);
-        if (!response.ok) throw new Error('CSV file not found: ' + csvFile);
-        const csvText = await response.text();
-
-        const dataObjects = parseCSV(csvText);
-        const sentiments = ['Positive', 'Neutral', 'Negative'];
-        const sentimentData = {};
-        sentiments.forEach(s => { sentimentData[s] = {}; });
-
-        dataObjects.forEach(({ Department, Sentiment, Count }) => {
-          const countNum = Number(Count);
-          if (sentiments.includes(Sentiment)) {
-            if (!sentimentData[Sentiment][Department]) {
-              sentimentData[Sentiment][Department] = 0;
-            }
-            sentimentData[Sentiment][Department] += countNum;
-          }
+      // Aggregate counts by Department from CSV data
+      function countByDepartment(data) {
+        const counts = {};
+        data.forEach((row) => {
+          const dept = row["Department"] || "Other";
+          counts[dept] = (counts[dept] || 0) + 1;
         });
+        return counts;
+      }
 
-        const colors = [
-          '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'
+      // Create Chart.js pie chart with counts
+      function createPieChart(counts) {
+        const ctx = document.getElementById("realIssuesChart").getContext("2d");
+        const labels = Object.keys(counts);
+        const values = Object.values(counts);
+
+        const backgroundColors = [
+          "#4e79a7",
+          "#f28e2b",
+          "#e15759",
+          "#76b7b2",
+          "#59a14f",
+          "#edc949",
+          "#af7aa1",
+          "#ff9da7",
+          "#9c755f",
+          "#bab0ab",
         ];
 
-        function renderPieChart(ctxId, labels, data) {
-          const ctx = document.getElementById(ctxId).getContext('2d');
-          new Chart(ctx, {
-            type: 'pie',
-            data: {
-              labels: labels,
-              datasets: [{
-                data: data,
-                backgroundColor: colors,
-                borderColor: '#fff',
-                borderWidth: 1
-              }]
+        new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Issue Counts",
+                data: values,
+                backgroundColor: backgroundColors.slice(0, labels.length),
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "right",
+                labels: {
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+              title: {
+                display: true,
+                text: "Real Issues Distribution by Category",
+                font: {
+                  size: 18,
+                },
+              },
             },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: 'right' }
-              }
-            }
-          });
-        }
-
-        sentiments.forEach(sentiment => {
-          const departments = Object.keys(sentimentData[sentiment]);
-          const counts = departments.map(dept => sentimentData[sentiment][dept]);
-          renderPieChart(sentiment.toLowerCase() + 'Chart', departments, counts);
+          },
         });
-
-      } catch (error) {
-        console.error('Error loading or parsing CSV:', error);
-        alert('Error loading data: ' + error.message);
       }
-    }
 
-    document.addEventListener('DOMContentLoaded', loadCSVAndRenderCharts);
-  </script>
-</body>
+      // Load CSV and render chart
+      async function loadAndRenderChart() {
+        try {
+          const response = await fetch(csvFilePath);
+          if (!response.ok)
+            throw new Error("Failed to load CSV file: " + response.statusText);
 
+          const csvText = await response.text();
+          const data = parseCSV(csvText);
+          const counts = countByDepartment(data);
+          createPieChart(counts);
+        } catch (error) {
+          console.error("Error loading or parsing CSV:", error);
+          const container = document.querySelector(".chart-container");
+          container.innerHTML =
+            "<p style='color:red; text-align:center;'>Failed to load chart data.</p>";
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", loadAndRenderChart);
+    </script>
+  </body>
 </html>
