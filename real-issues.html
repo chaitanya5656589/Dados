@@ -9,22 +9,25 @@
   <script src="script.js" defer></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    /* Flex container for multiple charts */
+    /* Override for multi-chart layout inside chart-container */
     .chart-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2rem;
-      margin-top: 1rem;
-      margin-bottom: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem 0;
     }
-    .chart-container canvas {
-      max-width: 320px;
-      max-height: 320px;
+    .chart-wrapper {
       background: #fff;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
       padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas {
+      max-width: 100% !important;
+      height: 280px !important;
     }
   </style>
 </head>
@@ -63,8 +66,12 @@
     <h2>Real Issues Categorization - Gandaki Province</h2>
 
     <div class="chart-container">
-      <canvas id="deptChart"></canvas>
-      <canvas id="sentimentChart"></canvas>
+      <div class="chart-wrapper">
+        <canvas id="deptChart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="sentimentChart"></canvas>
+      </div>
     </div>
   </main>
 
@@ -73,12 +80,10 @@
   </footer>
 
   <script>
-    // Load CSV data and process it
     async function loadCSVData(url) {
       const response = await fetch(url);
       const text = await response.text();
       const lines = text.trim().split('\n');
-      // skip header if present
       if(lines[0].includes("Feedback") && lines[0].includes("Department")) lines.shift();
       return lines.map(line => {
         const parts = line.split(',');
@@ -90,7 +95,6 @@
       });
     }
 
-    // Count occurrences for given key in array of objects
     function countBy(arr, key) {
       return arr.reduce((acc, obj) => {
         const k = obj[key] || "Unknown";
@@ -129,10 +133,7 @@
             title: {
               display: true,
               text: title,
-              font: {
-                size: 18,
-                weight: 'bold'
-              }
+              font: { size: 18, weight: 'bold' }
             }
           }
         }
@@ -141,22 +142,18 @@
 
     async function renderCharts() {
       const data = await loadCSVData('feedback_summary_counts.csv');
+      const deptCounts = countBy(data, 'department');
+      const sentimentCounts = countBy(data, 'sentiment');
 
-      // Count department occurrences
-      const deptCounts = countBy(data, 'Department');
       const deptLabels = Object.keys(deptCounts);
       const deptData = Object.values(deptCounts);
 
-      // Count sentiment occurrences
-      const sentimentCounts = countBy(data, 'Sentiment');
       const sentimentLabels = Object.keys(sentimentCounts);
       const sentimentData = Object.values(sentimentCounts);
 
-      // Get canvas contexts
       const deptCtx = document.getElementById('deptChart').getContext('2d');
       const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
 
-      // Create charts
       createPieChart(deptCtx, deptLabels, deptData, 'Issues by Department');
       createPieChart(sentimentCtx, sentimentLabels, sentimentData, 'Feedback Sentiment');
     }
