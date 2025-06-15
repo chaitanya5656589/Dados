@@ -2,160 +2,70 @@
 <html lang="en">
 
 <head>
+  <title>Real Issues - Dados</title>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dados - Real Issues</title>
-
-  <!-- Poppins font -->
-
-  
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="styles.css" />
- 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-  <style>
-    /* Base and typography (matches Dados) */
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background-color: #f4f4f4;
-      color: #222;
-      line-height: 1.6;
-    }
-
-    a {
-      text-decoration: none;
-      color: #ddd;
-    }
-
-    a:hover {
-      color: #fff;
-    }
-
-    /* Header bar */
-    header {
-      background-color: #222;
-      padding: 15px 30px;
-      display: flex;
-      align-items: center;
-      font-weight: 600;
-      font-size: 1.4rem;
-      color: #ddd;
-    }
-
-    header nav {
-      margin-left: auto;
-    }
-
-    header nav a {
-      margin-left: 25px;
-      font-weight: 600;
-      font-size: 1rem;
-      color: #ddd;
-      transition: color 0.3s ease;
-    }
-
-    header nav a.active,
-    header nav a:hover {
-      color: #fff;
-      border-bottom: 2px solid #48a0dc;
-      padding-bottom: 4px;
-    }
-
-    /* Main container (centered, max width) */
-    main.container {
-      max-width: 1080px;
-      margin: 40px auto 60px;
-      padding: 0 20px;
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
-    }
-
-    main.container h1 {
-      font-weight: 600;
-      font-size: 2rem;
-      margin-bottom: 30px;
-      color: #222;
-      text-align: center;
-    }
-
-    /* Chart wrapper flex */
-    .charts-wrapper {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 30px;
-    }
-
-    /* Each chart box */
-    .chart-box {
-      width: 320px;
-      background: #fafafa;
-      border-radius: 6px;
-      padding: 20px;
-      box-shadow: 0 0 8px rgb(0 0 0 / 0.05);
-      text-align: center;
-    }
-
-    .chart-box h2 {
-      font-weight: 600;
-      margin-bottom: 15px;
-      font-size: 1.25rem;
-      color: #333;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      color: #888;
-      font-size: 0.9rem;
-      padding: 20px 0 30px;
-      border-top: 1px solid #ddd;
-      max-width: 1080px;
-      margin: 0 auto 20px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 
 <body>
   <header>
-    Dados
     <nav>
-      <a href="index.html">Home</a>
-      <a href="real-issues.html" class="active">Real Issues</a>
+      <div class="nav-spacer"></div>
+      <a href="/Dados/index.html">Home</a>
+
+      <div class="dropdown">
+        <div class="dropdown-toggle">
+          Districts <i class="fas fa-caret-down"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="/Dados/major-districts.html">Major Districts</a>
+          <a href="/Dados/minor-districts.html">Minor Districts</a>
+          <a href="/Dados/districts.html">All Districts</a>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <div class="dropdown-toggle">
+          Municipalities <i class="fas fa-caret-down"></i>
+        </div>
+        <div class="dropdown-menu">
+          <a href="/Dados/urban-municipalities.html">Urban Municipalities</a>
+          <a href="/Dados/rural-municipalities.html">Rural Municipalities</a>
+          <a href="/Dados/municipalities.html">All Municipalities</a>
+        </div>
+      </div>
+
+      <a href="/Dados/issues.html">Issues</a>
+      <a href="/Dados/real-issues.html" class="active">Real Issues</a>
+      <a href="/Dados/how-it-works.html">How It Works</a>
     </nav>
   </header>
 
-  <main class="container">
-    <h1>Real Issues Feedback Summary</h1>
+  <main>
+    <h2>Real Issues Feedback Summary</h2>
 
-    <div class="charts-wrapper">
-      <section class="chart-box">
-        <h2>Positive Feedback</h2>
-        <canvas id="positiveChart" aria-label="Positive feedback pie chart" role="img"></canvas>
-      </section>
-
-      <section class="chart-box">
-        <h2>Neutral Feedback</h2>
-        <canvas id="neutralChart" aria-label="Neutral feedback pie chart" role="img"></canvas>
-      </section>
-
-      <section class="chart-box">
-        <h2>Negative Feedback</h2>
-        <canvas id="negativeChart" aria-label="Negative feedback pie chart" role="img"></canvas>
-      </section>
+    <div class="chart-container">
+      <!-- We'll show three pie charts for Positive, Neutral, Negative -->
+      <canvas id="positiveChart" aria-label="Positive feedback pie chart" role="img"></canvas>
+      <canvas id="neutralChart" aria-label="Neutral feedback pie chart" role="img"></canvas>
+      <canvas id="negativeChart" aria-label="Negative feedback pie chart" role="img"></canvas>
     </div>
+
+    <!-- Optional description or info about the charts -->
+    <section class="issues-description">
+      <p>
+        This page displays a sentiment-wise breakdown of feedback on various real issues collected from users.
+      </p>
+    </section>
   </main>
 
   <footer>
-    &copy; 2025 Dados - All rights reserved
+    <p>&copy; 2025 Dados - All rights reserved</p>
   </footer>
-
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
     async function loadCSVAndRenderCharts() {
