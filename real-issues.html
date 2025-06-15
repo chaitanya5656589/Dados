@@ -2,197 +2,151 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
   <title>Real Issues - Gandaki Province</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Align with Dados site styling basics */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
+    .chart-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin-top: 30px;
     }
     .chart-container {
-      max-width: 700px;
-      margin: auto;
+      width: 45%;
+      min-width: 300px;
+      margin-bottom: 30px;
     }
-    canvas {
-      max-width: 100%;
-    }
-    #sentimentChartContainer {
-      display: none;
-      margin-top: 40px;
-    }
-    .chart-title {
+    h2, h3 {
       text-align: center;
-      font-weight: bold;
-      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <!-- Your Dados header goes here - copy exactly from your other pages -->
   <header>
     <nav>
       <div class="nav-spacer"></div>
-      <a href="/Dados/index.html">Home</a>
+      <a href="index.html">Home</a>
       <div class="dropdown">
-        <div class="dropdown-toggle">
-          Districts <i class="fas fa-caret-down"></i>
-        </div>
+        <div class="dropdown-toggle">Districts</div>
         <div class="dropdown-menu">
-          <a href="/Dados/major-districts.html">Major Districts</a>
-          <a href="/Dados/minor-districts.html">Minor Districts</a>
-          <a href="/Dados/districts.html">All Districts</a>
+          <a href="major-districts.html">Major Districts</a>
+          <a href="minor-districts.html">Minor Districts</a>
+          <a href="districts.html">All Districts</a>
         </div>
       </div>
       <div class="dropdown">
-        <div class="dropdown-toggle">
-          Municipalities <i class="fas fa-caret-down"></i>
-        </div>
+        <div class="dropdown-toggle">Municipalities</div>
         <div class="dropdown-menu">
-          <a href="/Dados/urban-municipalities.html">Urban Municipalities</a>
-          <a href="/Dados/rural-municipalities.html">Rural Municipalities</a>
-          <a href="/Dados/municipalities.html">All Municipalities</a>
+          <a href="urban-municipalities.html">Urban Municipalities</a>
+          <a href="rural-municipalities.html">Rural Municipalities</a>
+          <a href="municipalities.html">All Municipalities</a>
         </div>
       </div>
-      <a href="/Dados/issues.html" class="active">Issues</a>
-      <a href="/Dados/how-it-works.html">How It Works</a>
+      <a href="issues.html">Issues</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="real-issues.html" class="active">Real Issues</a>
     </nav>
   </header>
 
   <main>
-    <h2>Real Issues in Gandaki Province</h2>
-    <div class="chart-container">
-      <div>
-        <div class="chart-title">Issues by Department (click a slice)</div>
-        <canvas id="departmentChart"></canvas>
+    <h2>Real Issues Overview</h2>
+    <div class="chart-wrapper">
+      <div class="chart-container">
+        <h3>Issues by Department</h3>
+        <canvas id="deptChart"></canvas>
       </div>
-      <div id="sentimentChartContainer">
-        <div class="chart-title" id="sentimentTitle"></div>
+      <div class="chart-container">
+        <h3>Sentiment Breakdown</h3>
         <canvas id="sentimentChart"></canvas>
       </div>
     </div>
   </main>
 
-  <!-- Your Dados footer goes here -->
   <footer>
     <p>&copy; 2025 Gandaki Province Information Portal</p>
   </footer>
 
   <script>
-    // Adjust CSV file path if needed
-    const csvFile = 'feedback_summary_counts.csv';
+    const csvData = `Department,Sentiment,Count
+Electricity,Neutral,146
+Governance,Neutral,95
+Law & Order,Negative,47
+Law & Order,Neutral,53
+Public Health,Negative,25
+Public Health,Neutral,67
+Public Health,Positive,19
+Roads,Negative,48
+Roads,Neutral,106
+Sanitation,Negative,19
+Sanitation,Neutral,158
+Sanitation,Positive,16
+Water,Negative,31
+Water,Neutral,170`;
 
-    async function loadCSV(url) {
-      const response = await fetch(url);
-      const text = await response.text();
-      const lines = text.trim().split('\n');
-      // Skip header line and parse
-      return lines.slice(1).map(line => {
-        const [department, sentiment, countStr] = line.split(',');
-        return { department, sentiment, count: +countStr };
-      });
-    }
+    const parsed = {};
+    const deptCounts = {};
 
-    function aggregateDepartments(data) {
-      const deptTotals = {};
-      const deptSentiments = {};
+    csvData.split("\n").slice(1).forEach(line => {
+      const [dept, sentiment, countStr] = line.split(",");
+      const count = parseInt(countStr.trim());
+      if (!parsed[dept]) parsed[dept] = {};
+      if (!parsed[dept][sentiment]) parsed[dept][sentiment] = 0;
+      parsed[dept][sentiment] += count;
 
-      data.forEach(({ department, sentiment, count }) => {
-        deptTotals[department] = (deptTotals[department] || 0) + count;
+      deptCounts[dept] = (deptCounts[dept] || 0) + count;
+    });
 
-        if (!deptSentiments[department]) {
-          deptSentiments[department] = { Positive: 0, Neutral: 0, Negative: 0 };
+    // Department Chart
+    const deptCtx = document.getElementById('deptChart').getContext('2d');
+    const deptChart = new Chart(deptCtx, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(deptCounts),
+        datasets: [{
+          label: 'Issues by Department',
+          data: Object.values(deptCounts),
+          backgroundColor: [
+            '#ff6384', '#36a2eb', '#cc65fe', '#ffce56',
+            '#00c49f', '#ff8c00', '#e6194b'
+          ]
+        }]
+      },
+      options: {
+        onClick: (evt, elements) => {
+          if (elements.length === 0) return;
+          const index = elements[0].index;
+          const dept = deptChart.data.labels[index];
+          updateSentimentChart(dept);
         }
-        if (deptSentiments[department][sentiment] !== undefined) {
-          deptSentiments[department][sentiment] += count;
-        }
-      });
+      }
+    });
 
-      return { deptTotals, deptSentiments };
+    // Sentiment Chart (initial placeholder)
+    const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+    const sentimentChart = new Chart(sentimentCtx, {
+      type: 'pie',
+      data: {
+        labels: ["Click on a department pie to view sentiment"],
+        datasets: [{
+          data: [1],
+          backgroundColor: ['#d3d3d3']
+        }]
+      }
+    });
+
+    function updateSentimentChart(dept) {
+      const sentiments = parsed[dept];
+      sentimentChart.data.labels = Object.keys(sentiments);
+      sentimentChart.data.datasets[0].data = Object.values(sentiments);
+      sentimentChart.data.datasets[0].backgroundColor = ['#4caf50', '#f44336', '#ffeb3b']; // Positive, Negative, Neutral
+      sentimentChart.options.plugins.title = {
+        display: true,
+        text: `Sentiment breakdown for ${dept}`
+      };
+      sentimentChart.update();
     }
-
-    function randomColor(index) {
-      // Use fixed palette or HSL random
-      const colors = [
-        '#3366CC','#DC3912','#FF9900','#109618','#990099',
-        '#0099C6','#DD4477','#66AA00','#B82E2E','#316395'
-      ];
-      return colors[index % colors.length];
-    }
-
-    async function main() {
-      const data = await loadCSV(csvFile);
-      const { deptTotals, deptSentiments } = aggregateDepartments(data);
-
-      const departments = Object.keys(deptTotals);
-      const totals = departments.map(d => deptTotals[d]);
-      const colors = departments.map((_, i) => randomColor(i));
-
-      const ctxDept = document.getElementById('departmentChart').getContext('2d');
-      const ctxSentiment = document.getElementById('sentimentChart').getContext('2d');
-
-      let sentimentChart = null;
-
-      const departmentChart = new Chart(ctxDept, {
-        type: 'pie',
-        data: {
-          labels: departments,
-          datasets: [{
-            data: totals,
-            backgroundColor: colors,
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'bottom' },
-          },
-          onClick(evt, elements) {
-            if (!elements.length) return;
-            const idx = elements[0].index;
-            const dept = departments[idx];
-            const sentimentData = deptSentiments[dept];
-            if (!sentimentData) return;
-
-            document.getElementById('sentimentTitle').textContent = `Sentiment Breakdown for "${dept}"`;
-            document.getElementById('sentimentChartContainer').style.display = 'block';
-
-            if (sentimentChart) {
-              sentimentChart.destroy();
-            }
-
-            sentimentChart = new Chart(ctxSentiment, {
-              type: 'pie',
-              data: {
-                labels: ['Positive', 'Neutral', 'Negative'],
-                datasets: [{
-                  data: [
-                    sentimentData.Positive,
-                    sentimentData.Neutral,
-                    sentimentData.Negative
-                  ],
-                  backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
-                }]
-              },
-              options: {
-                responsive: true,
-                plugins: {
-                  legend: { position: 'bottom' },
-                }
-              }
-            });
-          }
-        }
-      });
-    }
-
-    main();
   </script>
 </body>
 </html>
