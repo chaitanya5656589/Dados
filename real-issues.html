@@ -10,13 +10,13 @@
     .chart-wrapper {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-around;
+      justify-content: center;
+      gap: 40px;
       margin-top: 30px;
     }
     .chart-container {
-      width: 45%;
-      min-width: 300px;
-      margin-bottom: 30px;
+      width: 320px;
+      max-width: 90%;
     }
     h2, h3 {
       text-align: center;
@@ -94,7 +94,6 @@ Water,Neutral,170`;
       if (!parsed[dept]) parsed[dept] = {};
       if (!parsed[dept][sentiment]) parsed[dept][sentiment] = 0;
       parsed[dept][sentiment] += count;
-
       deptCounts[dept] = (deptCounts[dept] || 0) + count;
     });
 
@@ -105,7 +104,7 @@ Water,Neutral,170`;
       data: {
         labels: Object.keys(deptCounts),
         datasets: [{
-          label: 'Issues by Department',
+          label: 'Department',
           data: Object.values(deptCounts),
           backgroundColor: [
             '#ff6384', '#36a2eb', '#cc65fe', '#ffce56',
@@ -114,6 +113,21 @@ Water,Neutral,170`;
         }]
       },
       options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.formattedValue || '';
+                return `${label}: ${value} reports`;
+              }
+            }
+          },
+          title: {
+            display: false
+          }
+        },
         onClick: (evt, elements) => {
           if (elements.length === 0) return;
           const index = elements[0].index;
@@ -123,16 +137,24 @@ Water,Neutral,170`;
       }
     });
 
-    // Sentiment Chart (initial placeholder)
+    // Sentiment Chart (placeholder)
     const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
     const sentimentChart = new Chart(sentimentCtx, {
       type: 'pie',
       data: {
-        labels: ["Click on a department pie to view sentiment"],
+        labels: ["Click a department to view"],
         datasets: [{
           data: [1],
           backgroundColor: ['#d3d3d3']
         }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: false
+          }
+        }
       }
     });
 
@@ -140,7 +162,7 @@ Water,Neutral,170`;
       const sentiments = parsed[dept];
       sentimentChart.data.labels = Object.keys(sentiments);
       sentimentChart.data.datasets[0].data = Object.values(sentiments);
-      sentimentChart.data.datasets[0].backgroundColor = ['#4caf50', '#f44336', '#ffeb3b']; // Positive, Negative, Neutral
+      sentimentChart.data.datasets[0].backgroundColor = ['#4caf50', '#f44336', '#ffeb3b'];
       sentimentChart.options.plugins.title = {
         display: true,
         text: `Sentiment breakdown for ${dept}`
