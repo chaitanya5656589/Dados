@@ -14,8 +14,9 @@
       margin-top: 30px;
     }
     .chart-container {
-      width: 45%;
-      min-width: 300px;
+      width: 40%;
+      min-width: 280px;
+      max-width: 400px;
       margin-bottom: 30px;
     }
     h2, h3 {
@@ -69,74 +70,78 @@
   </footer>
 
   <script>
-    const csvData = `Department,Sentiment,Count
-Electricity,Neutral,146
-Governance,Neutral,95
-Law & Order,Negative,47
-Law & Order,Neutral,53
-Public Health,Negative,25
-Public Health,Neutral,67
-Public Health,Positive,19
-Roads,Negative,48
-Roads,Neutral,106
-Sanitation,Negative,19
-Sanitation,Neutral,158
-Sanitation,Positive,16
-Water,Negative,31
-Water,Neutral,170`;
+    let sentimentChart;
 
-    const parsed = {};
-    const deptCounts = {};
+    fetch('feedback_summary_counts.csv')
+      .then(response => response.text())
+      .then(csvData => {
+        const parsed = {};
+        const deptCounts = {};
 
-    csvData.split("\n").slice(1).forEach(line => {
-      const [dept, sentiment, countStr] = line.split(",");
-      const count = parseInt(countStr.trim());
-      if (!parsed[dept]) parsed[dept] = {};
-      if (!parsed[dept][sentiment]) parsed[dept][sentiment] = 0;
-      parsed[dept][sentiment] += count;
+        csvData.split("\n").slice(1).forEach(line => {
+          const [dept, sentiment, countStr] = line.split(",");
+          if (!dept || !sentiment || !countStr) return;
+          const count = parseInt(countStr.trim());
+          if (!parsed[dept]) parsed[dept] = {};
+          if (!parsed[dept][sentiment]) parsed[dept][sentiment] = 0;
+          parsed[dept][sentiment] += count;
 
-      deptCounts[dept] = (deptCounts[dept] || 0) + count;
-    });
+          deptCounts[dept] = (deptCounts[dept] || 0) + count;
+        });
 
-    // Department Chart
-    const deptCtx = document.getElementById('deptChart').getContext('2d');
-    const deptChart = new Chart(deptCtx, {
-      type: 'pie',
-      data: {
-        labels: Object.keys(deptCounts),
-        datasets: [{
-          label: 'Issues by Department',
-          data: Object.values(deptCounts),
-          backgroundColor: [
-            '#ff6384', '#36a2eb', '#cc65fe', '#ffce56',
-            '#00c49f', '#ff8c00', '#e6194b'
-          ]
-        }]
-      },
-      options: {
-        onClick: (evt, elements) => {
-          if (elements.length === 0) return;
-          const index = elements[0].index;
-          const dept = deptChart.data.labels[index];
-          updateSentimentChart(dept);
-        }
-      }
-    });
+        const deptCtx = document.getElementById('deptChart').getContext('2d');
+        const deptChart = new Chart(deptCtx, {
+          type: 'pie',
+          data: {
+            labels: Object.keys(deptCounts),
+            datasets: [{
+              label: 'Issues by Department',
+              data: Object.values(deptCounts),
+              backgroundColor: [
+                '#ff6384', '#36a2eb', '#cc65fe', '#ffce56',
+                '#00c49f', '#ff8c00', '#e6194b'
+              ]
+            }]
+          },
+          options: {
+            onClick: (evt, elements) => {
+              if (elements.length === 0) return;
+              const index = elements[0].index;
+              const dept = deptChart.data.labels[index];
+              updateSentimentChart(dept, parsed);
+            },
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
 
-    // Sentiment Chart (initial placeholder)
-    const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
-    const sentimentChart = new Chart(sentimentCtx, {
-      type: 'pie',
-      data: {
-        labels: ["Click on a department pie to view sentiment"],
-        datasets: [{
-          data: [1],
-          backgroundColor: ['#d3d3d3']
-        }]
-      }
-    });
+        const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+        sentimentChart = new Chart(sentimentCtx, {
+          type: 'pie',
+          data: {
+            labels: ["Click a department slice to view sentiment"],
+            datasets: [{
+              data: [1],
+              backgroundColor: ['#d3d3d3']
+            }]
+          },
+          options: {
+            plugins: {
+              legend: {
+                position: 'bottom'
+              },
+              title: {
+                display: false
+              }
+            }
+          }
+        });
+      });
 
-    function updateSentimentChart(dept) {
+    function updateSentimentChart(dept, parsed) {
       const sentiments = parsed[dept];
       sentimentChart.data.labels = Object.keys(sentiments);
       sentimentChart.data.datasets[0].data = Object.values(sentiments);
@@ -150,4 +155,3 @@ Water,Neutral,170`;
   </script>
 </body>
 </html>
-
