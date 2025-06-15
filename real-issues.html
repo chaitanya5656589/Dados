@@ -1,191 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dados - Real Issues Feedback</title>
+  <title>Dados - Real Issues</title>
 
-  <!-- Poppins font like Dados -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- Poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
   <style>
+    /* Base and typography (matches Dados) */
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #f9f9f9;
       margin: 0;
-      padding: 0 20px 40px;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f4;
       color: #222;
+      line-height: 1.6;
     }
 
-    header {
-      background: #333;
-      color: white;
-      padding: 15px 20px;
-      font-weight: 700;
-      font-size: 1.5rem;
-    }
-
-    a.menu-link {
-      color: #fff;
+    a {
       text-decoration: none;
-      margin-left: 20px;
+      color: #ddd;
+    }
+
+    a:hover {
+      color: #fff;
+    }
+
+    /* Header bar */
+    header {
+      background-color: #222;
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
       font-weight: 600;
+      font-size: 1.4rem;
+      color: #ddd;
     }
 
-    a.menu-link:hover {
-      text-decoration: underline;
+    header nav {
+      margin-left: auto;
     }
 
-    #real-issues {
+    header nav a {
+      margin-left: 25px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #ddd;
+      transition: color 0.3s ease;
+    }
+
+    header nav a.active,
+    header nav a:hover {
+      color: #fff;
+      border-bottom: 2px solid #48a0dc;
+      padding-bottom: 4px;
+    }
+
+    /* Main container (centered, max width) */
+    main.container {
       max-width: 1080px;
-      margin: 40px auto;
+      margin: 40px auto 60px;
+      padding: 0 20px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+    }
+
+    main.container h1 {
+      font-weight: 600;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      color: #222;
       text-align: center;
     }
 
-    #real-issues h1 {
-      font-weight: 700;
-      margin-bottom: 30px;
-      font-size: 2rem;
+    /* Chart wrapper flex */
+    .charts-wrapper {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
     }
 
-    .chart-container {
-      display: inline-block;
+    /* Each chart box */
+    .chart-box {
       width: 320px;
-      margin: 0 20px 40px;
-      vertical-align: top;
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+      background: #fafafa;
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 0 8px rgb(0 0 0 / 0.05);
+      text-align: center;
     }
 
-    .chart-container h2 {
+    .chart-box h2 {
       font-weight: 600;
-      margin-bottom: 10px;
-      font-size: 1.2rem;
-      color: #444;
+      margin-bottom: 15px;
+      font-size: 1.25rem;
+      color: #333;
     }
 
+    /* Footer */
     footer {
       text-align: center;
-      color: #777;
+      color: #888;
       font-size: 0.9rem;
-      margin-top: 50px;
+      padding: 20px 0 30px;
+      border-top: 1px solid #ddd;
+      max-width: 1080px;
+      margin: 0 auto 20px;
     }
   </style>
 </head>
+
 <body>
+  <header>
+    Dados
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="real-issues.html" class="active">Real Issues</a>
+    </nav>
+  </header>
 
-<header>
-  Dados
-  <a class="menu-link" href="index.html">Home</a>
-  <a class="menu-link" href="real-issues.html">Real Issues</a>
-</header>
+  <main class="container">
+    <h1>Real Issues Feedback Summary</h1>
 
-<section id="real-issues">
-  <h1>Real Issues Feedback Summary</h1>
+    <div class="charts-wrapper">
+      <section class="chart-box">
+        <h2>Positive Feedback</h2>
+        <canvas id="positiveChart" aria-label="Positive feedback pie chart" role="img"></canvas>
+      </section>
 
-  <div class="chart-container">
-    <h2>Positive Feedback</h2>
-    <canvas id="positiveChart"></canvas>
-  </div>
+      <section class="chart-box">
+        <h2>Neutral Feedback</h2>
+        <canvas id="neutralChart" aria-label="Neutral feedback pie chart" role="img"></canvas>
+      </section>
 
-  <div class="chart-container">
-    <h2>Neutral Feedback</h2>
-    <canvas id="neutralChart"></canvas>
-  </div>
+      <section class="chart-box">
+        <h2>Negative Feedback</h2>
+        <canvas id="negativeChart" aria-label="Negative feedback pie chart" role="img"></canvas>
+      </section>
+    </div>
+  </main>
 
-  <div class="chart-container">
-    <h2>Negative Feedback</h2>
-    <canvas id="negativeChart"></canvas>
-  </div>
-</section>
+  <footer>
+    &copy; 2025 Dados - All rights reserved
+  </footer>
 
-<footer>
-  &copy; 2025 Dados - All rights reserved
-</footer>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    async function loadCSVAndRenderCharts() {
+      const csvFile = 'feedback_summary_counts.csv'; // Adjust path if needed
 
-<script>
-  async function loadCSVAndRenderCharts() {
-    // Update this path if your CSV is in a subfolder like /data/feedback_summary_counts.csv
-    const csvFile = 'feedback_summary_counts.csv';
-
-    function parseCSV(csvText) {
-      const lines = csvText.trim().split('\n');
-      const headers = lines[0].split(',');
-      return lines.slice(1).map(line => {
-        const values = line.split(',');
-        let obj = {};
-        headers.forEach((header, i) => {
-          obj[header.trim()] = values[i].trim();
-        });
-        return obj;
-      });
-    }
-
-    try {
-      const response = await fetch(csvFile);
-      if (!response.ok) throw new Error('CSV file not found: ' + csvFile);
-      const csvText = await response.text();
-
-      const dataObjects = parseCSV(csvText);
-      const sentiments = ['Positive', 'Neutral', 'Negative'];
-      const sentimentData = {};
-      sentiments.forEach(s => { sentimentData[s] = {}; });
-
-      dataObjects.forEach(({ Department, Sentiment, Count }) => {
-        const countNum = Number(Count);
-        if (sentiments.includes(Sentiment)) {
-          if (!sentimentData[Sentiment][Department]) {
-            sentimentData[Sentiment][Department] = 0;
-          }
-          sentimentData[Sentiment][Department] += countNum;
-        }
-      });
-
-      const colors = [
-        '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'
-      ];
-
-      function renderPieChart(ctxId, labels, data) {
-        const ctx = document.getElementById(ctxId).getContext('2d');
-        new Chart(ctx, {
-          type: 'pie',
-          data: {
-            labels: labels,
-            datasets: [{
-              data: data,
-              backgroundColor: colors,
-              borderColor: '#fff',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: 'right' }
-            }
-          }
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',');
+        return lines.slice(1).map(line => {
+          const values = line.split(',');
+          let obj = {};
+          headers.forEach((header, i) => {
+            obj[header.trim()] = values[i].trim();
+          });
+          return obj;
         });
       }
 
-      sentiments.forEach(sentiment => {
-        const departments = Object.keys(sentimentData[sentiment]);
-        const counts = departments.map(dept => sentimentData[sentiment][dept]);
-        renderPieChart(sentiment.toLowerCase() + 'Chart', departments, counts);
-      });
+      try {
+        const response = await fetch(csvFile);
+        if (!response.ok) throw new Error('CSV file not found: ' + csvFile);
+        const csvText = await response.text();
 
-    } catch (error) {
-      console.error('Error loading or parsing CSV:', error);
-      alert('Error loading data: ' + error.message);
+        const dataObjects = parseCSV(csvText);
+        const sentiments = ['Positive', 'Neutral', 'Negative'];
+        const sentimentData = {};
+        sentiments.forEach(s => { sentimentData[s] = {}; });
+
+        dataObjects.forEach(({ Department, Sentiment, Count }) => {
+          const countNum = Number(Count);
+          if (sentiments.includes(Sentiment)) {
+            if (!sentimentData[Sentiment][Department]) {
+              sentimentData[Sentiment][Department] = 0;
+            }
+            sentimentData[Sentiment][Department] += countNum;
+          }
+        });
+
+        const colors = [
+          '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'
+        ];
+
+        function renderPieChart(ctxId, labels, data) {
+          const ctx = document.getElementById(ctxId).getContext('2d');
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: data,
+                backgroundColor: colors,
+                borderColor: '#fff',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'right' }
+              }
+            }
+          });
+        }
+
+        sentiments.forEach(sentiment => {
+          const departments = Object.keys(sentimentData[sentiment]);
+          const counts = departments.map(dept => sentimentData[sentiment][dept]);
+          renderPieChart(sentiment.toLowerCase() + 'Chart', departments, counts);
+        });
+
+      } catch (error) {
+        console.error('Error loading or parsing CSV:', error);
+        alert('Error loading data: ' + error.message);
+      }
     }
-  }
 
-  document.addEventListener('DOMContentLoaded', loadCSVAndRenderCharts);
-</script>
-
+    document.addEventListener('DOMContentLoaded', loadCSVAndRenderCharts);
+  </script>
 </body>
+
 </html>
