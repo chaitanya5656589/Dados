@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Real Issues - Gandaki Province</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width" />
+  <title>Real Issues - Gandaki Province</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
+    /* Make charts responsive and aligned */
     .chart-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      padding: 1rem 0;
-    }
-    .chart-wrapper {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
-      padding: 1rem;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      gap: 40px;
+      max-width: 800px;
+      margin: 20px auto;
     }
     canvas {
-      max-width: 100% !important;
-      height: 280px !important;
+      max-width: 100%;
+    }
+    #sentimentChartContainer {
+      width: 400px;
+    }
+    .info-text {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -59,16 +60,18 @@
       <a href="/Dados/how-it-works.html">How It Works</a>
     </nav>
   </header>
-
   <main>
-    <h2>Real Issues Categorization - Gandaki Province</h2>
+    <h2>Real Issues in Gandaki Province</h2>
 
     <div class="chart-container">
-      <div class="chart-wrapper">
-        <canvas id="deptChart"></canvas>
+      <div>
+        <div class="info-text">Issues by Department (Click on slice to see sentiment)</div>
+        <canvas id="departmentChart" width="400" height="400"></canvas>
       </div>
-      <div class="chart-wrapper">
-        <canvas id="sentimentChart"></canvas>
+
+      <div id="sentimentChartContainer" style="display:none;">
+        <div class="info-text" id="sentimentTitle"></div>
+        <canvas id="sentimentChart" width="400" height="400"></canvas>
       </div>
     </div>
   </main>
@@ -78,108 +81,116 @@
   </footer>
 
   <script>
-    // Simple CSV parser to handle commas inside quotes
-    function parseCSV(text) {
-      const rows = [];
-      const lines = text.split('\n').filter(line => line.trim() !== '');
-      for (let line of lines) {
-        let row = [];
-        let inQuotes = false;
-        let value = '';
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          if (char === '"' && (i === 0 || line[i-1] !== '\\')) {
-            inQuotes = !inQuotes;
-          } else if (char === ',' && !inQuotes) {
-            row.push(value.trim().replace(/^"|"$/g, ''));
-            value = '';
-          } else {
-            value += char;
-          }
+    // Load CSV file, parse and prepare data
+    async function loadCSV(url) {
+      const res = await fetch(url);
+      const text = await res.text();
+      return text.trim().split('\n').slice(1).map(line => {
+        const parts = line.split(',');
+        // Assuming CSV columns: Feedback,Department,Sentiment
+        return {
+          feedback: parts[0],
+          department: parts[1],
+          sentiment: parts[2]
+        };
+      });
+    }
+
+    // Aggregate data for department counts and sentiment counts per department
+    function aggregateData(data) {
+      const deptCounts = {};
+      const deptSentiments = {};
+      data.forEach(({department, sentiment}) => {
+        if (!deptCounts[department]) deptCounts[department] = 0;
+        deptCounts[department]++;
+
+        if (!deptSentiments[department]) {
+          deptSentiments[department] = { Positive: 0, Neutral: 0, Negative: 0 };
         }
-        row.push(value.trim().replace(/^"|"$/g, ''));
-        rows.push(row);
+        if (sentiment in deptSentiments[department]) {
+          deptSentiments[department][sentiment]++;
+        }
+      });
+      return { deptCounts, deptSentiments };
+    }
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i=0; i<6; i++) {
+        color += letters[Math.floor(Math.random()*16)];
       }
-      return rows;
+      return color;
     }
 
-    async function loadCSVData(url) {
-      const response = await fetch(url);
-      const text = await response.text();
-      const parsed = parseCSV(text);
-      // Remove header
-      if(parsed.length && parsed[0][0].toLowerCase() === 'feedback') parsed.shift();
-      return parsed.map(row => ({
-        feedback: row[0],
-        department: row[1],
-        sentiment: row[2]
-      }));
-    }
+    async function renderCharts() {
+      const data = await loadCSV('feedback_summary_counts.csv');
 
-    function countBy(arr, key) {
-      return arr.reduce((acc, obj) => {
-        const k = obj[key] || "Unknown";
-        acc[k] = (acc[k] || 0) + 1;
-        return acc;
-      }, {});
-    }
+      const { deptCounts, deptSentiments } = aggregateData(data);
 
-    function createPieChart(ctx, labels, data, title) {
-      return new Chart(ctx, {
+      const departments = Object.keys(deptCounts);
+      const counts = departments.map(d => deptCounts[d]);
+      const colors = departments.map(() => getRandomColor());
+
+      // Main department pie chart
+      const ctxDept = document.getElementById('departmentChart').getContext('2d');
+      const departmentChart = new Chart(ctxDept, {
         type: 'pie',
         data: {
-          labels: labels,
+          labels: departments,
           datasets: [{
-            data: data,
-            backgroundColor: [
-              '#4dc9f6',
-              '#f67019',
-              '#f53794',
-              '#537bc4',
-              '#acc236',
-              '#166a8f',
-              '#00a950',
-              '#58595b',
-              '#8549ba'
-            ],
-            borderWidth: 1
+            data: counts,
+            backgroundColor: colors,
           }]
         },
         options: {
           responsive: true,
           plugins: {
-            legend: {
-              position: 'bottom'
-            },
-            title: {
-              display: true,
-              text: title,
-              font: { size: 18, weight: 'bold' }
-            }
+            legend: { position: 'bottom' },
+            tooltip: { enabled: true }
+          },
+          onClick(evt, elements) {
+            if (elements.length === 0) return;
+            const idx = elements[0].index;
+            const dept = departments[idx];
+            showSentimentChart(dept, deptSentiments[dept], colors[idx]);
           }
         }
       });
-    }
 
-    async function renderCharts() {
-      try {
-        const data = await loadCSVData('feedback_summary_counts.csv');
-        const deptCounts = countBy(data, 'department');
-        const sentimentCounts = countBy(data, 'sentiment');
+      // Sentiment pie chart (hidden initially)
+      const ctxSent = document.getElementById('sentimentChart').getContext('2d');
+      let sentimentChart = null;
 
-        const deptLabels = Object.keys(deptCounts);
-        const deptData = Object.values(deptCounts);
+      function showSentimentChart(dept, sentimentData, color) {
+        document.getElementById('sentimentChartContainer').style.display = 'block';
+        document.getElementById('sentimentTitle').textContent = `Feedback Sentiment for "${dept}"`;
 
-        const sentimentLabels = Object.keys(sentimentCounts);
-        const sentimentData = Object.values(sentimentCounts);
+        if (sentimentChart) {
+          sentimentChart.destroy();
+        }
 
-        const deptCtx = document.getElementById('deptChart').getContext('2d');
-        const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+        const sentiments = Object.keys(sentimentData);
+        const values = sentiments.map(s => sentimentData[s]);
+        const sentimentColors = ['#4CAF50', '#FFC107', '#F44336']; // Positive-green, Neutral-yellow, Negative-red
 
-        createPieChart(deptCtx, deptLabels, deptData, 'Issues by Department');
-        createPieChart(sentimentCtx, sentimentLabels, sentimentData, 'Feedback Sentiment');
-      } catch (error) {
-        console.error('Error loading or rendering charts:', error);
+        sentimentChart = new Chart(ctxSent, {
+          type: 'pie',
+          data: {
+            labels: sentiments,
+            datasets: [{
+              data: values,
+              backgroundColor: sentimentColors,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'bottom' },
+              tooltip: { enabled: true }
+            }
+          }
+        });
       }
     }
 
