@@ -72,7 +72,7 @@
   <script>
     let sentimentChart;
 
-    fetch('feedback_summary_counts.csv')
+    fetch('categorized_feedback_with_sentiment.csv')
       .then(response => response.text())
       .then(csvData => {
         const parsed = {};
